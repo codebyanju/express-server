@@ -19,7 +19,6 @@ app.use(function (req, res, next) {
   next(); // Continue to the next middleware/route handler
 });
 
-// Route to get paginated posts
 app.get("/posts", (req, res) => {
   // Load mock data from JSON file
   const posts = JSON.parse(fs.readFileSync("posts.json", "utf-8"));
@@ -33,7 +32,10 @@ app.get("/posts", (req, res) => {
   const endIndex = page * limit;
 
   // Paginated data
-  const paginatedPosts = posts.slice(startIndex, endIndex);
+  // const paginatedPosts = posts.slice(startIndex, endIndex);
+  const paginatedPosts = posts.filter(
+    (_, index) => index >= startIndex && index < endIndex
+  );
 
   // Total number of posts
   const totalPosts = posts.length;
