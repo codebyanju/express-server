@@ -13,7 +13,7 @@ app.use(function (req, res, next) {
 
   // Handle preflight requests for CORS (OPTIONS method)
   if (req.method === "OPTIONS") {
-    return res.sendStatus(204); // Send a 204 status for preflight checks
+    return res.sendStatus(204);
   }
 
   next(); // Continue to the next middleware/route handler
@@ -22,25 +22,23 @@ app.use(function (req, res, next) {
 app.get("/posts", (req, res) => {
   // Load mock data from JSON file
   const posts = JSON.parse(fs.readFileSync("posts.json", "utf-8"));
+  // console.log("req", req);
 
-  // Extract pagination parameters from query string
+  if (parseInt(req.query.page) < 1) throw Error("Page < 1 not allowed");
+
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
-  // Calculate start and end indices for the current page
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
-  // Paginated data
   // const paginatedPosts = posts.slice(startIndex, endIndex);
   const paginatedPosts = posts.filter(
     (_, index) => index >= startIndex && index < endIndex
   );
 
-  // Total number of posts
   const totalPosts = posts.length;
 
-  // Pagination response
   const response = {
     page,
     limit,
@@ -49,7 +47,6 @@ app.get("/posts", (req, res) => {
     posts: paginatedPosts,
   };
 
-  // Send response
   res.json(response);
 });
 
